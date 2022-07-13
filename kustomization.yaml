@@ -1,7 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 bases:
 - components/test-component--hikj/base
-- components/test-component--stmi/base
 kind: Kustomization
 resources:
 - common-storage-pvc.yaml
