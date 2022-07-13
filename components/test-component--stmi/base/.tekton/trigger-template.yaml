@@ -1,0 +1,53 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  creationTimestamp: null
+  name: test-component--stmi
+  namespace: build-templates-e2e
+spec:
+  params:
+  - name: git-revision
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      annotations:
+        build.appstudio.openshift.io/application: test-app-vvpj
+        build.appstudio.openshift.io/build: "true"
+        build.appstudio.openshift.io/component: test-component--stmi
+        build.appstudio.openshift.io/type: build
+        build.appstudio.openshift.io/version: "0.1"
+        pipelines.appstudio.openshift.io/type: build
+      creationTimestamp: null
+      generateName: test-component--stmi-
+      labels:
+        build.appstudio.openshift.io/application: test-app-vvpj
+        build.appstudio.openshift.io/build: "true"
+        build.appstudio.openshift.io/component: test-component--stmi
+        build.appstudio.openshift.io/type: build
+        build.appstudio.openshift.io/version: "0.1"
+        pipelines.appstudio.openshift.io/type: build
+      namespace: build-templates-e2e
+    spec:
+      params:
+      - name: git-url
+        value: https://github.com/devfile-samples/devfile-sample-go-basic
+      - name: output-image
+        value: quay.io/redhat-appstudio/test-images:1f2a3919f9644463b3b5c9ac29e1fe5d-$(tt.params.git-revision)
+      - name: dockerfile
+        value: docker/Dockerfile
+      - name: path-context
+        value: .
+      pipelineRef:
+        bundle: quay.io/redhat-appstudio/pull-request-builds:hacbs-cf0cefe99af2d7d5067c0f61d24b9bce96068b64
+        name: docker-build
+      workspaces:
+      - name: workspace
+        persistentVolumeClaim:
+          claimName: appstudio
+        subPath: test-component--stmi/$(tt.params.git-revision)
+      - name: registry-auth
+        secret:
+          secretName: redhat-appstudio-registry-pull-secret
+    status: {}
+status: {}
